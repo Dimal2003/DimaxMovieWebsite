@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dimax - Movie Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* CSS Variables - Your Color Palette */
+      :root {
+        --black: #000;
+        --dark: #111;
+        --gold: #ffd700;
+        --gray: #333;
+        --text-primary: #ffffff;
+        --text-secondary: #b8b8b8;
+        --glass: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      /* Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: var(--black);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+        height: 100vh;
+      }
+
+      /* Layout */
+      .app-container {
+        display: flex;
+        min-height: 100vh;
+        position: relative;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 280px;
+        background: var(--dark);
+        padding: 2rem 1.5rem;
+        border-right: 1px solid var(--gray);
+        position: fixed;
+        height: 100vh;
+        z-index: 100;
+        transition: var(--transition);
+      }
+
+      .sidebar__logo {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        padding-left: 0.5rem;
+      }
+
+      .sidebar__logo-icon {
+        color: var(--gold);
+        font-size: 1.8rem;
+        margin-right: 0.75rem;
+      }
+
+      .sidebar__logo-text {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--gold);
+      }
+
+      .sidebar__nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .sidebar__nav-item {
+        display: flex;
+        align-items: center;
+        padding: 0.85rem 1rem;
+        border-radius: 8px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .sidebar__nav-item:hover {
+        background: var(--gray);
+        color: var(--text-primary);
+      }
+
+      .sidebar__nav-item.active {
+        background: rgba(255, 215, 0, 0.1);
+        color: var(--gold);
+        border-left: 3px solid var(--gold);
+      }
+
+      .sidebar__nav-icon {
+        font-size: 1.2rem;
+        margin-right: 0.75rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .sidebar__nav-text {
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+
+      .sidebar__footer {
+        position: absolute;
+        bottom: 2rem;
+        left: 1.5rem;
+        right: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--gray);
+      }
+
+      .sidebar__user {
+        display: flex;
+        align-items: center;
+      }
+
+      .sidebar__user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+        font-weight: 600;
+      }
+
+      .sidebar__user-info {
+        flex: 1;
+      }
+
+      .sidebar__user-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.1rem;
+      }
+
+      .sidebar__user-role {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      .sidebar__logout {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .sidebar__logout:hover {
+        color: var(--gold);
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        margin-left: 280px;
+        background-color: var(--black);
+        min-height: 100vh;
+      }
+
+      /* Top Bar */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        background: var(--dark);
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        border-bottom: 1px solid var(--gray);
+      }
+
+      .topbar__title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        color: var(--gold);
+      }
+
+      .topbar__actions {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .topbar__search {
+        position: relative;
+      }
+
+      .topbar__search-input {
+        background: var(--gray);
+        border: 1px solid var(--gray);
+        border-radius: 30px;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        width: 220px;
+        transition: var(--transition);
+      }
+
+      .topbar__search-input:focus {
+        outline: none;
+        border-color: var(--gold);
+        width: 260px;
+      }
+
+      .topbar__search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
+      .topbar__notifications {
+        position: relative;
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .topbar__notifications:hover {
+        color: var(--gold);
+      }
+
+      .topbar__notifications-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #ff1744;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        font-weight: 600;
+      }
+
+      .topbar__profile {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .topbar__profile-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gold);
+        color: var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .topbar__profile-name {
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      .topbar__profile-dropdown {
+        position: absolute;
+        top: 120%;
+        right: 0;
+        background: var(--dark);
+        border-radius: 8px;
+        padding: 0.5rem 0;
+        min-width: 180px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+        z-index: 100;
+      }
+
+      .topbar__profile:hover .topbar__profile-dropdown {
+        opacity: 1;
+        visibility: visible;
+        top: 100%;
+      }
+
+      .topbar__profile-link {
+        display: block;
+        padding: 0.6rem 1rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: var(--transition);
+      }
+
+      .topbar__profile-link:hover {
+        color: var(--text-primary);
+        background: var(--gray);
+      }
+
+      .topbar__profile-link i {
+        margin-right: 0.5rem;
+        width: 18px;
+        text-align: center;
+      }
+
+      /* Dashboard Content */
+      .dashboard {
+        padding: 2rem;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--dark);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--gold);
+      }
+
+      .stat-card__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .stat-card__title {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .stat-card__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        background: var(--gray);
+        color: var(--gold);
+      }
+
+      .stat-card__value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--gold);
+      }
+
+      .stat-card__change {
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .stat-card__change--up {
+        color: #00e676;
+      }
+
+      .stat-card__change--down {
+        color: #ff1744;
+      }
+
+      .stat-card__change i {
+        margin-right: 0.3rem;
+      }
+
+      /* Charts Section */
+      .charts-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .chart-card {
+        background: var(--dark);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray);
+      }
+
+      .chart-card__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .chart-card__title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--gold);
+      }
+
+      .chart-card__actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .chart-card__action {
+        background: var(--gray);
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .chart-card__action:hover {
+        color: var(--gold);
+        background: rgba(255, 215, 0, 0.1);
+      }
+
+      .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
+      }
+
+      /* Recent Activity */
+      .activity-card {
+        background: var(--dark);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray);
+      }
+
+      .activity-card__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .activity-card__title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--gold);
+      }
+
+      .activity-card__view-all {
+        color: var(--gold);
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .activity-card__view-all:hover {
+        text-decoration: underline;
+      }
+
+      .activity-list {
+        list-style: none;
+      }
+
+      .activity-item {
+        display: flex;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--gray);
+      }
+
+      .activity-item:last-child {
+        border-bottom: none;
+      }
+
+      .activity-item__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: rgba(255, 215, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        color: var(--gold);
+        font-size: 1rem;
+      }
+
+      .activity-item__content {
+        flex: 1;
+      }
+
+      .activity-item__title {
+        font-weight: 500;
+        font-size: 0.95rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .activity-item__description {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.3rem;
+      }
+
+      .activity-item__time {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      /* Movies Table */
+      .movies-section {
+        margin-top: 2rem;
+      }
+
+      .movies-card {
+        background: var(--dark);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray);
+      }
+
+      .movies-card__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .movies-card__title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--gold);
+      }
+
+      .movies-card__actions {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .movies-card__button {
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .movies-card__button--primary {
+        background: var(--gold);
+        color: var(--black);
+      }
+
+      .movies-card__button--primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+      }
+
+      .movies-card__button--secondary {
+        background: var(--gray);
+        color: var(--text-primary);
+      }
+
+      .movies-card__button--secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .movies-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .movies-table thead th {
+        text-align: left;
+        padding: 0.8rem 1rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--gray);
+      }
+
+      .movies-table tbody tr {
+        transition: var(--transition);
+      }
+
+      .movies-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .movies-table tbody td {
+        padding: 1rem;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--gray);
+      }
+
+      .movies-table__movie {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .movies-table__poster {
+        width: 50px;
+        height: 70px;
+        border-radius: 4px;
+        object-fit: cover;
+        background: var(--gray);
+      }
+
+      .movies-table__title {
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+      }
+
+      .movies-table__genre {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      .movies-table__status {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      .movies-table__status--published {
+        background: rgba(0, 230, 118, 0.1);
+        color: #00e676;
+      }
+
+      .movies-table__status--draft {
+        background: rgba(255, 171, 0, 0.1);
+        color: #ffab00;
+      }
+
+      .movies-table__rating {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .movies-table__stars {
+        color: #ffab00;
+        font-size: 0.8rem;
+      }
+
+      .movies-table__actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .movies-table__action {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--gray);
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .movies-table__action:hover {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .movies-table__action--edit:hover {
+        color: var(--gold);
+        background: rgba(255, 215, 0, 0.1);
+      }
+
+      .movies-table__action--delete:hover {
+        color: #ff1744;
+        background: rgba(255, 23, 68, 0.1);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1200px) {
+        .charts-section {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 992px) {
+        .sidebar {
+          transform: translateX(-100%);
+          position: fixed;
+          width: 280px;
+        }
+
+        .sidebar.active {
+          transform: translateX(0);
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .topbar__menu-toggle {
+          display: block;
+          background: none;
+          border: none;
+          color: var(--text-primary);
+          font-size: 1.5rem;
+          cursor: pointer;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .topbar__search-input {
+          width: 180px;
+        }
+
+        .topbar__search-input:focus {
+          width: 180px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .dashboard {
+          padding: 1rem;
+        }
+
+        .topbar {
+          padding: 1rem;
+        }
+
+        .topbar__search {
+          display: none;
+        }
+
+        .movies-card__actions {
+          flex-direction: column;
+          gap: 0.5rem;
+          width: 100%;
+        }
+
+        .movies-card__button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar__logo">
+          <div class="sidebar__logo-icon">
+            <i class="fas fa-film"></i>
+          </div>
+          <div class="sidebar__logo-text">Dimax</div>
+        </div>
+
+        <nav class="sidebar__nav">
+          <a href="adminDashboard.html" class="sidebar__nav-item active">
+            <div class="sidebar__nav-icon">
+              <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <div class="sidebar__nav-text">Dashboard</div>
+          </a>
+          <a href="adminDashboard.html" class="sidebar__nav-item">
+            <div class="sidebar__nav-icon">
+              <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <div class="sidebar__nav-text">Dashboard</div>
+          </a>
+          <a href="adminMovies.html" class="sidebar__nav-item">
+            <div class="sidebar__nav-icon">
+              <i class="fas fa-film"></i>
+            </div>
+            <div class="sidebar__nav-text">Movies</div>
+          </a>
+          <a href="users.html" class="sidebar__nav-item">
+            <div class="sidebar__nav-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="sidebar__nav-text">Users</div>
+          </a>
+          <a href="#" class="sidebar__nav-item">
+            <div class="sidebar__nav-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="sidebar__nav-text">Analytics</div>
+          </a>
+          <a href="#" class="sidebar__nav-item">
+            <div class="sidebar__nav-icon">
+              <i class="fas fa-ticket-alt"></i>
+            </div>
+            <div class="sidebar__nav-text">Subscriptions</div>
+          </a>
+          <a href="#" class="sidebar__nav-item">
+            <div class="sidebar__nav-icon">
+              <i class="fas fa-cog"></i>
+            </div>
+            <div class="sidebar__nav-text">Settings</div>
+          </a>
+        </nav>
+
+        <div class="sidebar__footer">
+          <div class="sidebar__user">
+            <div class="sidebar__user-avatar">AD</div>
+            <div class="sidebar__user-info">
+              <div class="sidebar__user-name">Admin User</div>
+              <div class="sidebar__user-role">Super Admin</div>
+            </div>
+            <button class="sidebar__logout">
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+          <button class="topbar__menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="topbar__title">Dashboard Overview</h1>
+          <div class="topbar__actions">
+            <div class="topbar__search">
+              <i class="fas fa-search topbar__search-icon"></i>
+              <input
+                type="text"
+                class="topbar__search-input"
+                placeholder="Search..."
+              />
+            </div>
+            <div class="topbar__notifications">
+              <i class="fas fa-bell"></i>
+              <span class="topbar__notifications-badge">3</span>
+            </div>
+            <div class="topbar__profile">
+              <div class="topbar__profile-avatar">AD</div>
+              <div class="topbar__profile-name">Admin</div>
+              <div class="topbar__profile-dropdown">
+                <a href="#" class="topbar__profile-link">
+                  <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="#" class="topbar__profile-link">
+                  <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="#" class="topbar__profile-link">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard">
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-card__header">
+                <div class="stat-card__title">Total Movies</div>
+                <div class="stat-card__icon">
+                  <i class="fas fa-film"></i>
+                </div>
+              </div>
+              <div class="stat-card__value">1,248</div>
+              <div class="stat-card__change stat-card__change--up">
+                <i class="fas fa-arrow-up"></i> 12% from last month
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__header">
+                <div class="stat-card__title">Active Users</div>
+                <div class="stat-card__icon">
+                  <i class="fas fa-users"></i>
+                </div>
+              </div>
+              <div class="stat-card__value">24,569</div>
+              <div class="stat-card__change stat-card__change--up">
+                <i class="fas fa-arrow-up"></i> 8% from last week
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__header">
+                <div class="stat-card__title">Total Revenue</div>
+                <div class="stat-card__icon">
+                  <i class="fas fa-dollar-sign"></i>
+                </div>
+              </div>
+              <div class="stat-card__value">$186,420</div>
+              <div class="stat-card__change stat-card__change--up">
+                <i class="fas fa-arrow-up"></i> 22% from last quarter
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card__header">
+                <div class="stat-card__title">Avg. Rating</div>
+                <div class="stat-card__icon">
+                  <i class="fas fa-star"></i>
+                </div>
+              </div>
+              <div class="stat-card__value">4.3</div>
+              <div class="stat-card__change stat-card__change--down">
+                <i class="fas fa-arrow-down"></i> 0.2 from last month
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Section -->
+          <div class="charts-section">
+            <div class="chart-card">
+              <div class="chart-card__header">
+                <h3 class="chart-card__title">Monthly Views</h3>
+                <div class="chart-card__actions">
+                  <button class="chart-card__action">
+                    <i class="fas fa-ellipsis-h"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="viewsChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card__header">
+                <h3 class="chart-card__title">Content Types</h3>
+                <div class="chart-card__actions">
+                  <button class="chart-card__action">
+                    <i class="fas fa-ellipsis-h"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="chart-container">
+                <canvas id="contentChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity and Movies Table -->
+          <div class="charts-section">
+            <div class="activity-card">
+              <div class="activity-card__header">
+                <h3 class="activity-card__title">Recent Activity</h3>
+                <a href="#" class="activity-card__view-all">View All</a>
+              </div>
+              <ul class="activity-list">
+                <li class="activity-item">
+                  <div class="activity-item__icon">
+                    <i class="fas fa-film"></i>
+                  </div>
+                  <div class="activity-item__content">
+                    <h4 class="activity-item__title">New Movie Added</h4>
+                    <p class="activity-item__description">
+                      "The Last Odyssey" was added to the library
+                    </p>
+                    <div class="activity-item__time">2 hours ago</div>
+                  </div>
+                </li>
+                <li class="activity-item">
+                  <div class="activity-item__icon">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="activity-item__content">
+                    <h4 class="activity-item__title">User Subscription</h4>
+                    <p class="activity-item__description">
+                      Premium subscription purchased by user@example.com
+                    </p>
+                    <div class="activity-item__time">5 hours ago</div>
+                  </div>
+                </li>
+                <li class="activity-item">
+                  <div class="activity-item__icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </div>
+                  <div class="activity-item__content">
+                    <h4 class="activity-item__title">Content Flagged</h4>
+                    <p class="activity-item__description">
+                      "Midnight Run" was flagged for review
+                    </p>
+                    <div class="activity-item__time">1 day ago</div>
+                  </div>
+                </li>
+                <li class="activity-item">
+                  <div class="activity-item__icon">
+                    <i class="fas fa-star"></i>
+                  </div>
+                  <div class="activity-item__content">
+                    <h4 class="activity-item__title">New Rating</h4>
+                    <p class="activity-item__description">
+                      "Cosmic Journey" received a 5-star rating
+                    </p>
+                    <div class="activity-item__time">2 days ago</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="movies-card">
+              <div class="movies-card__header">
+                <h3 class="movies-card__title">Recently Added Movies</h3>
+                <div class="movies-card__actions">
+                  <button
+                    class="movies-card__button movies-card__button--secondary"
+                  >
+                    <i class="fas fa-filter"></i> Filter
+                  </button>
+                  <button
+                    class="movies-card__button movies-card__button--primary"
+                  >
+                    <i class="fas fa-plus"></i> Add Movie
+                  </button>
+                </div>
+              </div>
+              <table class="movies-table">
+                <thead>
+                  <tr>
+                    <th>Movie</th>
+                    <th>Genre</th>
+                    <th>Status</th>
+                    <th>Rating</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="movies-table__movie">
+                        <div
+                          class="movies-table__poster"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #ff9a9e 0%,
+                              #fad0c4 100%
+                            );
+                          "
+                        ></div>
+                        <div>
+                          <div class="movies-table__title">
+                            The Last Odyssey
+                          </div>
+                          <div class="movies-table__genre">
+                            Sci-Fi, Adventure
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Sci-Fi</td>
+                    <td>
+                      <span
+                        class="movies-table__status movies-table__status--published"
+                        >Published</span
+                      >
+                    </td>
+                    <td>
+                      <div class="movies-table__rating">
+                        <div class="movies-table__stars">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span>4.5</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="movies-table__actions">
+                        <button
+                          class="movies-table__action movies-table__action--edit"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button
+                          class="movies-table__action movies-table__action--delete"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="movies-table__movie">
+                        <div
+                          class="movies-table__poster"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #a1c4fd 0%,
+                              #c2e9fb 100%
+                            );
+                          "
+                        ></div>
+                        <div>
+                          <div class="movies-table__title">Midnight Run</div>
+                          <div class="movies-table__genre">Action, Comedy</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Action</td>
+                    <td>
+                      <span
+                        class="movies-table__status movies-table__status--published"
+                        >Published</span
+                      >
+                    </td>
+                    <td>
+                      <div class="movies-table__rating">
+                        <div class="movies-table__stars">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="far fa-star"></i>
+                        </div>
+                        <span>4.0</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="movies-table__actions">
+                        <button
+                          class="movies-table__action movies-table__action--edit"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button
+                          class="movies-table__action movies-table__action--delete"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="movies-table__movie">
+                        <div
+                          class="movies-table__poster"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #ffecd2 0%,
+                              #fcb69f 100%
+                            );
+                          "
+                        ></div>
+                        <div>
+                          <div class="movies-table__title">Cosmic Journey</div>
+                          <div class="movies-table__genre">Sci-Fi, Drama</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Sci-Fi</td>
+                    <td>
+                      <span
+                        class="movies-table__status movies-table__status--draft"
+                        >Draft</span
+                      >
+                    </td>
+                    <td>
+                      <div class="movies-table__rating">
+                        <div class="movies-table__stars">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                        </div>
+                        <span>5.0</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="movies-table__actions">
+                        <button
+                          class="movies-table__action movies-table__action--edit"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button
+                          class="movies-table__action movies-table__action--delete"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="movies-table__movie">
+                        <div
+                          class="movies-table__poster"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #84fab0 0%,
+                              #8fd3f4 100%
+                            );
+                          "
+                        ></div>
+                        <div>
+                          <div class="movies-table__title">Neon Dreams</div>
+                          <div class="movies-table__genre">
+                            Thriller, Mystery
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Thriller</td>
+                    <td>
+                      <span
+                        class="movies-table__status movies-table__status--published"
+                        >Published</span
+                      >
+                    </td>
+                    <td>
+                      <div class="movies-table__rating">
+                        <div class="movies-table__stars">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="far fa-star"></i>
+                          <i class="far fa-star"></i>
+                        </div>
+                        <span>3.0</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="movies-table__actions">
+                        <button
+                          class="movies-table__action movies-table__action--edit"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button
+                          class="movies-table__action movies-table__action--delete"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Toggle sidebar on mobile
+      document
+        .querySelector(".topbar__menu-toggle")
+        .addEventListener("click", function () {
+          document.querySelector(".sidebar").classList.toggle("active");
+        });
+
+      // Initialize charts
+      document.addEventListener("DOMContentLoaded", function () {
+        // Monthly Views Chart
+        const viewsCtx = document.getElementById("viewsChart").getContext("2d");
+        const viewsChart = new Chart(viewsCtx, {
+          type: "line",
+          data: {
+            labels: [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ],
+            datasets: [
+              {
+                label: "Monthly Views",
+                data: [
+                  12000, 19000, 15000, 22000, 25000, 30000, 35000, 32000, 28000,
+                  40000, 38000, 45000,
+                ],
+                borderColor: "#ffd700",
+                backgroundColor: "rgba(255, 215, 0, 0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: "#ffd700",
+                pointRadius: 4,
+                pointHoverRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                backgroundColor: "#111",
+                titleColor: "#ffd700",
+                bodyColor: "#b8b8b8",
+                borderColor: "#333",
+                borderWidth: 1,
+                padding: 12,
+                usePointStyle: true,
+                callbacks: {
+                  label: function (context) {
+                    return context.parsed.y.toLocaleString() + " views";
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false,
+                  drawBorder: false,
+                },
+                ticks: {
+                  color: "#b8b8b8",
+                },
+              },
+              y: {
+                grid: {
+                  color: "rgba(255, 255, 255, 0.05)",
+                  drawBorder: false,
+                },
+                ticks: {
+                  color: "#b8b8b8",
+                  callback: function (value) {
+                    if (value >= 1000) {
+                      return value / 1000 + "k";
+                    }
+                    return value;
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Content Types Chart
+        const contentCtx = document
+          .getElementById("contentChart")
+          .getContext("2d");
+        const contentChart = new Chart(contentCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["Movies", "TV Shows", "Documentaries", "Short Films"],
+            datasets: [
+              {
+                data: [65, 20, 10, 5],
+                backgroundColor: ["#ffd700", "#333", "#ff1744", "#00e676"],
+                borderColor: "#111",
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "70%",
+            plugins: {
+              legend: {
+                position: "right",
+                labels: {
+                  color: "#b8b8b8",
+                  padding: 20,
+                  usePointStyle: true,
+                  pointStyle: "circle",
+                },
+              },
+              tooltip: {
+                backgroundColor: "#111",
+                titleColor: "#ffd700",
+                bodyColor: "#b8b8b8",
+                borderColor: "#333",
+                borderWidth: 1,
+                padding: 12,
+                usePointStyle: true,
+                callbacks: {
+                  label: function (context) {
+                    return context.label + ": " + context.raw + "%";
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Simulate loading data
+        setTimeout(() => {
+          // Update stats with animation
+          const statValues = document.querySelectorAll(".stat-card__value");
+          statValues.forEach((value, index) => {
+            const target = [1248, 24569, 186420, 4.3][index];
+            animateValue(value, 0, target, 1000);
+          });
+
+          // Update chart data after 1 second (simulating API call)
+          setTimeout(() => {
+            viewsChart.data.datasets[0].data = [
+              15000, 22000, 18000, 25000, 28000, 35000, 40000, 38000, 32000,
+              45000, 42000, 50000,
+            ];
+            viewsChart.update();
+          }, 1000);
+        }, 500);
+      });
+
+      // Value animation function
+      function animateValue(element, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const value = Math.floor(progress * (end - start) + start);
+          if (end === 4.3) {
+            element.textContent =
+              progress === 1 ? end.toFixed(1) : value.toFixed(1);
+          } else if (end === 186420) {
+            element.textContent =
+              progress === 1
+                ? "$" + end.toLocaleString()
+                : "$" + value.toLocaleString();
+          } else {
+            element.textContent =
+              progress === 1 ? end.toLocaleString() : value.toLocaleString();
+          }
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          }
+        };
+        window.requestAnimationFrame(step);
+      }
+
+      // Logout functionality
+      document
+        .querySelector(".sidebar__logout")
+        .addEventListener("click", function () {
+          // Add logout logic here
+          window.location.href = "login.html";
+        });
+    </script>
+  </body>
+</html>

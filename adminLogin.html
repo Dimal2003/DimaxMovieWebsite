@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="css/login.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  </head>
+  <body>
+    <div class="login-page">
+      <div class="movie-background">
+        <!-- Movie images as background -->
+        <img src="assets/images/banner1-1.jpg" alt="Movie 1" />
+        <img src="assets/images/banner1-2.jpg" alt="Movie 2" />
+        <img src="assets/images/banner1-4.jpg" alt="Movie 3" />
+        <img src="assets/images/banner1-7.jpg" alt="Movie 4" />
+        <img src="assets/images/banner1-8.jpg" alt="Movie 5" />
+      </div>
+
+      <div class="overlay"></div>
+
+      <div class="login-container">
+        <h2>Welcome Back</h2>
+        <form class="login-form" id="loginForm">
+          <label for="adminName">Admin Name</label>
+          <input type="text" id="adminName" name="adminName" required />
+
+          <label for="adminPassword">Password</label>
+          <input
+            type="password"
+            id="adminPassword"
+            name="adminPassword"
+            required
+          />
+
+          <button type="submit">Sign In</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      document.getElementById("loginForm").onsubmit = async function (event) {
+        event.preventDefault();
+
+        const adminName = document.getElementById("adminName").value;
+        const adminPassword = document.getElementById("adminPassword").value;
+
+        try {
+          const response = await fetch("http://localhost:5000/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ adminName, adminPassword }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+
+            // Use the returned `_id` for redirection
+            const _id = data._id;
+            window.location.href = `adminDashboard.html?_id=${_id}`; // Redirect with _id in the URL
+          } else {
+            const errorData = await response.json();
+            alert(`Error: ${errorData.message}`);
+          }
+        } catch (error) {
+          console.error("Error during login:", error);
+          alert("An error occurred while logging in.");
+        }
+      };
+    </script>
+  </body>
+</html>

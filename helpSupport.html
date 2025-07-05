@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Help & Support</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      /* General styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        background: #0a0a0a;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .support-container {
+        display: flex;
+        width: 80%;
+        max-width: 1200px;
+        height: 80%;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .image-section {
+        flex: 1;
+        background-color: #111;
+      }
+
+      .image-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .form-section {
+        flex: 1.5;
+        background: #212121;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .support-header h2 {
+        font-size: 30px;
+        color: #ffd700;
+        margin-bottom: 10px;
+      }
+
+      .support-header p {
+        color: #bbb;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      .support-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .form-group label {
+        font-size: 14px;
+        font-weight: bold;
+        color: #ffd700;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 1px solid #333;
+        outline: none;
+        background: #333;
+        color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        border: 1px solid #ffd700;
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+      }
+
+      textarea {
+        resize: none;
+      }
+
+      button.btn {
+        padding: 15px 20px;
+        font-size: 16px;
+        color: #fff;
+        background: #ffd700;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      button.btn:hover {
+        background: #e0c200;
+        transform: translateY(-3px);
+      }
+
+      button.btn:active {
+        transform: translateY(1px);
+      }
+
+      .response-message {
+        margin-top: 20px;
+        font-size: 14px;
+        color: green;
+      }
+
+      .response-message.error {
+        color: red;
+      }
+
+      @media (max-width: 768px) {
+        .support-container {
+          flex-direction: column;
+          height: auto;
+          width: 90%;
+        }
+
+        .image-section {
+          height: 250px;
+        }
+
+        .form-section {
+          padding: 20px;
+        }
+
+        .support-header h2 {
+          font-size: 24px;
+        }
+
+        .form-group label {
+          font-size: 13px;
+        }
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 50%;
+        text-align: center;
+        color: #0a0a0a;
+      }
+
+      .close-btn {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 25px;
+      }
+
+      .close-btn:hover,
+      .close-btn:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="support-container">
+      <div class="image-section">
+        <img src="assets/helpCenter.png" alt="Support" />
+      </div>
+
+      <div class="form-section">
+        <div class="support-header">
+          <h2><i class="fas fa-headset"></i> Contact Support</h2>
+          <p>Having trouble? We are here to help you!</p>
+        </div>
+
+        <form class="support-form" id="contactForm">
+          <div class="form-group">
+            <label for="issue">Select an Issue:</label>
+            <select id="issue" name="issue" required>
+              <option value="">Choose an issue</option>
+              <option value="account">Account Issues</option>
+              <option value="payment">Payment Issues</option>
+              <option value="technical">Technical Issues</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Describe your Issue:</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="6"
+              placeholder="Please describe your issue here..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Your Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email address"
+              required
+              autocomplete="off"
+            />
+          </div>
+
+          <button type="submit" class="btn">Send Message</button>
+        </form>
+
+        <div class="response-message" id="responseMessage"></div>
+      </div>
+    </div>
+
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <span id="closeModal" class="close-btn" aria-label="Close Modal"
+          >&times;</span
+        >
+        <h2>
+          Thank you for contacting us! Your request has been successfully
+          submitted.
+        </h2>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("contactForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const issue = document.getElementById("issue").value.trim();
+          const message = document.getElementById("message").value.trim();
+          const email = document.getElementById("email").value.trim();
+
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address.");
+            return;
+          }
+
+          const formData = { issue, message, email };
+
+          try {
+            const response = await fetch(
+              "http://localhost:5000/api/help/support",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+              }
+            );
+
+            const result = await response.json();
+
+            if (response.ok) {
+              document.getElementById("successModal").style.display = "block";
+              document.getElementById("contactForm").reset();
+            } else {
+              document.getElementById("responseMessage").innerText =
+                result.message || "Error occurred. Please try again.";
+              document.getElementById("responseMessage").classList.add("error");
+            }
+          } catch (error) {
+            document.getElementById("responseMessage").innerText =
+              "A network error occurred. Please try again.";
+            document.getElementById("responseMessage").classList.add("error");
+          }
+        });
+
+      const modal = document.getElementById("successModal");
+      const closeModal = document.getElementById("closeModal");
+      closeModal.onclick = () => (modal.style.display = "none");
+
+      window.onclick = (event) => {
+        if (event.target === modal) modal.style.display = "none";
+      };
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") modal.style.display = "none";
+      });
+    </script>
+  </body>
+</html>

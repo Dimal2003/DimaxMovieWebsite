@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DIMAX Movie Profile</title>
+    <style>
+      :root {
+        --black: #000;
+        --dark: #111;
+        --gold: #ffd700;
+        --gray: #333;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: var(--black);
+        color: white;
+        margin: 0;
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .header {
+        border-bottom: 2px solid var(--gold);
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        color: var(--gold);
+        margin: 0;
+        font-size: 28px;
+      }
+
+      .header p {
+        color: #aaa;
+        margin: 5px 0 0;
+      }
+
+      .cover {
+        position: relative;
+        width: 100%;
+        height: 260px;
+        background: url("https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1200&q=80")
+          center/cover no-repeat;
+        border-radius: 0 0 24px 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        margin-bottom: 90px;
+      }
+
+      .cover-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 40px;
+      }
+
+      .cover-title {
+        color: var(--gold);
+        font-size: 2.3rem;
+        margin: 0;
+        letter-spacing: 2px;
+        text-shadow: 0 2px 12px #000;
+        font-weight: bold;
+      }
+
+      .cover-subtitle {
+        color: #fff;
+        font-size: 1.1rem;
+        margin: 8px 0 0;
+        text-shadow: 0 2px 8px #000;
+      }
+
+      .avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 3px solid var(--gold);
+        object-fit: cover;
+      }
+
+      .cover-avatar-left {
+        position: absolute;
+        left: 40px;
+        bottom: -70px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 5px solid var(--gold);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+        background: #222;
+        z-index: 3;
+      }
+
+      .profile-container {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+        margin-top: 40px;
+      }
+
+      .profile-info {
+        flex: 1;
+      }
+
+      .profile-name {
+        font-size: 24px;
+        margin: 0 0 5px;
+        color: var(--gold);
+      }
+
+      .profile-tagline {
+        color: #aaa;
+        margin: 0 0 20px;
+      }
+
+      .stats {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+      }
+
+      .stat {
+        text-align: center;
+      }
+
+      .stat-glass {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1.5px solid var(--gold);
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(255, 215, 0, 0.08),
+          0 1.5px 8px rgba(0, 0, 0, 0.18);
+        padding: 22px 28px;
+        min-width: 110px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-glass:hover {
+        transform: translateY(-4px) scale(1.04);
+        box-shadow: 0 8px 32px rgba(255, 215, 0, 0.18),
+          0 2px 12px rgba(0, 0, 0, 0.22);
+        border-color: #fffbe6;
+      }
+
+      .stat-value {
+        font-size: 2.1rem;
+        color: var(--gold);
+        font-weight: bold;
+        text-shadow: 0 2px 8px #000;
+      }
+
+      .stat-label {
+        font-size: 0.95rem;
+        color: #fffbe6;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.85;
+        margin-top: 6px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--gold);
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        background: var(--gray);
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: white;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .btn-primary {
+        background: var(--gold);
+        color: black;
+      }
+
+      .btn-danger {
+        background: #c0392b;
+        color: white;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        .profile-container {
+          flex-direction: column;
+        }
+
+        .stats {
+          justify-content: space-between;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .cover {
+          height: 160px;
+          margin-bottom: 70px;
+        }
+
+        .cover-avatar-left {
+          width: 90px;
+          height: 90px;
+          bottom: -45px;
+          left: 16px;
+        }
+
+        .cover-title {
+          font-size: 1.3rem;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .profile-container {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .profile-avatar-left {
+          margin-top: 0;
+          margin-bottom: 0;
+        }
+
+        .stats {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cover">
+      <img
+        src="https://i.pravatar.cc/180"
+        alt="Profile"
+        class="avatar cover-avatar-left"
+        id="avatar"
+      />
+      <div class="cover-content">
+        <h1 class="cover-title">DIMAX MOVIE PROFILE</h1>
+        <p class="cover-subtitle">
+          Your personal movie identity in the cinematic universe
+        </p>
+      </div>
+    </div>
+    <div class="profile-container">
+      <div class="profile-info">
+        <h2 class="profile-name">MovieBuff_42</h2>
+        <p class="profile-tagline">Film Critic • Collector • Festival Junkie</p>
+        <div class="stats">
+          <div class="stat stat-glass">
+            <div class="stat-value">856</div>
+            <div class="stat-label">Movies</div>
+          </div>
+          <div class="stat stat-glass">
+            <div class="stat-value">9.2</div>
+            <div class="stat-label">Rating</div>
+          </div>
+          <div class="stat stat-glass">
+            <div class="stat-value">47</div>
+            <div class="stat-label">Favorites</div>
+          </div>
+          <div class="stat stat-glass">
+            <div class="stat-value">8</div>
+            <div class="stat-label">Years</div>
+          </div>
+        </div>
+        <input type="file" id="avatar-upload" class="hidden" accept="image/*" />
+        <button
+          class="btn btn-primary"
+          onclick="document.getElementById('avatar-upload').click()"
+        >
+          Change Avatar
+        </button>
+        <div class="form-group" style="margin-top: 30px">
+          <label for="username">Username</label>
+          <input type="text" id="username" value="MovieBuff_42" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" value="moviebuff@example.com" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" />
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary">Save Changes</button>
+          <button class="btn btn-danger">Delete Account</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const avatar = document.getElementById("avatar");
+      const avatarUpload = document.getElementById("avatar-upload");
+
+      avatarUpload.addEventListener("change", function (e) {
+        if (e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            avatar.src = event.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="DIMAX - Explore a wide collection of TV series."
+    />
+    <meta
+      name="keywords"
+      content="DIMAX, TV series, entertainment, streaming"
+    />
+    <meta name="author" content="Your Name" />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <title>DIMAX - TV Series</title>
+    <link rel="stylesheet" href="css/dimax.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+  </head>
+  <body>
+    <header>
+      <nav class="topnav" id="myTopnav">
+        <a href="dimax.html"
+          ><img
+            src="assets/images/Asset 2.png"
+            alt="DIMAX Logo"
+            width="150px"
+            class="logo"
+        /></a>
+        <div class="nav-links">
+          <a href="dimax.html">Home</a>
+          <a href="series.html">Series</a>
+          <a href="movies.html">Movies</a>
+          <a href="newAndPopular.html">New & Popular</a>
+          <a href="mylist.html">My List</a>
+        </div>
+        <div class="nav-right">
+          <div class="profile-container">
+            <div class="search-container">
+              <select id="selectMovieTvGenre">
+                <option value="">Select Genre</option>
+              </select>
+              <input type="text" id="searchInput" placeholder="Search.." />
+            </div>
+            <div class="profile" tabindex="0">
+              <img
+                src="assets/favicon.ico"
+                alt="Profile Icon"
+                class="profile-icon"
+              />
+              <div class="dropdownMenu" id="profileDropdown">
+                <a href="#" id="profileSettings"
+                  ><span>Profile Settings</span></a
+                >
+                <a href="#" id="accountManagement"
+                  ><span>Account Management</span></a
+                >
+                <a href="helpSupport.html" id="helpSupport" target="_blank"
+                  ><span>Help & Support</span></a
+                >
+                <a href="#" id="language"><span>Language</span></a>
+                <a href="#" id="logoutButton"><span>Logout</span></a>
+              </div>
+            </div>
+          </div>
+          <button
+            id="loginButton"
+            style="
+              display: none;
+              margin-left: 16px;
+              padding: 10px 22px;
+              border-radius: 25px;
+              background: linear-gradient(90deg, #ffd700, #ffaa00);
+              color: #222;
+              font-weight: bold;
+              font-size: 15px;
+              cursor: pointer;
+            "
+          >
+            Login
+          </button>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <section class="content">
+        <div class="grid-container" id="contentGrid"></div>
+      </section>
+    </main>
+    <div id="pagination" style="text-align: center; margin: 20px"></div>
+    <footer>
+      <p>&copy; 2024 DIMAX. All rights reserved.</p>
+    </footer>
+    <script src="javascript/tmdbModule.js" type="module"></script>
+    <script src="javascript/series.js" type="module"></script>
+    <script src="javascript/navControl.js"></script>
+    <script>
+      const profile = document.querySelector(".profile");
+      const dropdownMenu = document.getElementById("profileDropdown");
+
+      if (profile && dropdownMenu) {
+        profile.addEventListener("click", () => {
+          profile.classList.toggle("active");
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!profile.contains(event.target)) {
+            profile.classList.remove("active");
+          }
+        });
+      }
+
+      document
+        .getElementById("logoutButton")
+        ?.addEventListener("click", async () => {
+          try {
+            const response = await fetch("http://localhost:5000/logout", {
+              method: "POST",
+              credentials: "include",
+            });
+
+            if (response.ok) {
+              // No alert, just redirect to main page as guest
+              window.location.href = "dimax.html";
+            } else {
+              alert("Failed to log out. Please try again.");
+            }
+          } catch (error) {
+            console.error("Error during logout request:", error);
+            alert("A network error occurred. Please try again.");
+          }
+        });
+
+      async function toggleLoginButton() {
+        try {
+          const res = await fetch("/auth/check", { credentials: "include" });
+          const data = await res.json();
+          const isLoggedIn = data.loggedIn === true;
+          const loginBtn = document.getElementById("loginButton");
+          const profile = document.querySelector(".profile");
+          if (loginBtn) {
+            loginBtn.style.display = isLoggedIn ? "none" : "inline-block";
+          }
+          if (profile) {
+            profile.style.display = isLoggedIn ? "flex" : "none";
+          }
+        } catch (e) {
+          // fallback: always show login button if any error
+          const loginBtn = document.getElementById("loginButton");
+          const profile = document.querySelector(".profile");
+          if (loginBtn) loginBtn.style.display = "inline-block";
+          if (profile) profile.style.display = "none";
+          console.error("toggleLoginButton error:", e);
+        }
+      }
+      document.addEventListener("DOMContentLoaded", toggleLoginButton);
+      window.addEventListener("pageshow", toggleLoginButton);
+      document.getElementById("loginButton").onclick = () => {
+        window.location.href = "login.html";
+      };
+    </script>
+  </body>
+</html>

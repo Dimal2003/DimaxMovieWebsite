@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Costume Support Inbox</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <style>
+      /* Global Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #000;
+        color: white;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        width: 20%;
+        background-color: #111;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-right: 1px solid #333;
+      }
+
+      .sidebar h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        text-align: center;
+        color: #ffd700;
+      }
+
+      .sidebar nav a {
+        display: block;
+        color: white;
+        padding: 15px;
+        margin-bottom: 10px;
+        text-decoration: none;
+        text-align: center;
+        background-color: #222;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .sidebar nav a:hover {
+        background-color: #ffd700;
+        color: black;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        background-color: #222;
+        padding: 20px;
+        font-size: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid #333;
+      }
+
+      /* Content Section */
+      .content {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      /* Email List */
+      .email-list {
+        width: 30%;
+        background-color: #111;
+        border-right: 1px solid #333;
+        overflow-y: auto;
+      }
+
+      .email-item {
+        padding: 15px;
+        border-bottom: 1px solid #222;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .email-item:hover {
+        background-color: #222;
+        transform: scale(1.02);
+      }
+
+      .email-sender {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #ffd700;
+      }
+
+      .email-subject {
+        font-size: 0.9rem;
+        color: #aaa;
+      }
+
+      .email-timestamp {
+        font-size: 0.8rem;
+        color: #555;
+        text-align: right;
+      }
+
+      /* Email Preview Section */
+      .email-preview {
+        flex: 1;
+        padding: 20px;
+        background-color: #222;
+        overflow-y: auto;
+      }
+
+      .email-preview h2 {
+        font-size: 1.8rem;
+        color: #ffd700;
+        margin-bottom: 10px;
+      }
+
+      .email-preview p {
+        margin: 10px 0;
+        font-size: 1rem;
+        color: #ccc;
+        line-height: 1.5;
+      }
+
+      /* Reply Form */
+      #replyForm {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      #replyMessage {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        background-color: #333;
+        color: white;
+        border: 1px solid #444;
+        border-radius: 8px;
+        font-size: 1rem;
+        resize: none;
+      }
+
+      #replyMessage:focus {
+        border-color: #ffd700;
+        outline: none;
+      }
+
+      #replyForm button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      #replyForm button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none; /* Hide sidebar on smaller screens */
+        }
+
+        .email-list {
+          width: 100%;
+        }
+
+        .email-preview {
+          display: none;
+        }
+
+        .email-preview.active {
+          display: block;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header {
+          font-size: 1.2rem;
+          padding: 10px;
+        }
+
+        .email-sender {
+          font-size: 1rem;
+        }
+
+        .email-subject {
+          font-size: 0.8rem;
+        }
+
+        .email-timestamp {
+          font-size: 0.7rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+      <nav>
+        <h2>Admin Panel</h2>
+        <a href="#">Inbox</a>
+        <a href="#">Sent</a>
+        <a href="#">Spam</a>
+        <a href="#">Trash</a>
+      </nav>
+      <div class="return">
+        <a href="adminDashboard.html">Return to admin Dashboard</a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <!-- Header -->
+      <div class="header">Costume Support Inbox</div>
+
+      <!-- Content Area -->
+      <div class="content">
+        <!-- Email List -->
+        <div class="email-list" id="emailList">
+          <!-- List of emails will be populated here by JavaScript -->
+        </div>
+
+        <!-- Email Preview -->
+        <div class="email-preview" id="emailPreview">
+          <h2>Select an Email</h2>
+          <p>Click on an email from the list to view its details.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function fetchEmails() {
+        try {
+          // Fetch all reports using the correct GET method
+          const response = await fetch("http://localhost:5000/admin/reports", {
+            method: "GET",
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              "Failed to load emails. Status: " + response.status
+            );
+          }
+
+          const reports = await response.json(); // Parse the response as JSON
+          populateEmailList(reports); // Populate the email list
+        } catch (error) {
+          console.error("Error fetching emails:", error);
+        }
+      }
+
+      function populateEmailList(reports) {
+        const emailList = document.getElementById("emailList");
+        emailList.innerHTML = ""; // Clear existing content
+
+        reports.forEach((report) => {
+          const emailItem = document.createElement("div");
+          emailItem.className = "email-item";
+          emailItem.onclick = () =>
+            showEmail(report.reportedBy.email, report.issue, report.message);
+
+          emailItem.innerHTML = `
+      <div class="email-sender">${report.reportedBy.email}</div>
+      <div class="email-subject">${report.issue}</div>
+      <div class="email-timestamp">${new Date(
+        report.reportDate
+      ).toLocaleString()}</div>
+    `;
+
+          emailList.appendChild(emailItem);
+        });
+      }
+
+      function showEmail(sender, subject, content) {
+        const preview = document.getElementById("emailPreview");
+        preview.innerHTML = `
+    <h2>${subject}</h2>
+    <p><strong>From:</strong> ${sender}</p>
+    <p><strong>Message:</strong>${content}</p>
+    <form id="replyForm">
+      <textarea id="replyMessage" placeholder="Write your response here..." required></textarea>
+      <button type="button" onclick="sendReply('${sender}')">Send</button>
+    </form>
+  `;
+      }
+
+      // Mock reply function (you can implement actual backend logic for this)
+      function sendReply(sender) {
+        const message = document.getElementById("replyMessage").value.trim();
+        if (!message) {
+          alert("Please write a response before sending.");
+          return;
+        }
+        alert(`Reply sent to ${sender}: ${message}`);
+        document.getElementById("replyForm").reset();
+      }
+
+      // Fetch emails on page load
+      window.onload = fetchEmails;
+    </script>
+  </body>
+</html>
