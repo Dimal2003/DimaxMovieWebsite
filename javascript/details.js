@@ -4,14 +4,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const id = urlParams.get("id");
   const type = urlParams.get("type");
-  const TMDB_API_KEY = "425273c307f70d431e9f9bbcf897c6d7";
   const TMDB_BASE_URL = "https://api.themoviedb.org/3";
   const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/original";
 
+  // Fetch TMDB details using backend proxy to keep API key secure
   const fetchDetailsFromTMDB = async (id, type) => {
-    const url = `${TMDB_BASE_URL}/${type}/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits,recommendations,videos`;
     try {
-      const response = await fetch(url);
+      const endpoint = `${type}/${id}`;
+      const params = new URLSearchParams({
+        append_to_response: "credits,recommendations,videos",
+      });
+      const response = await fetch(
+        `/api/tmdb-proxy?endpoint=${endpoint}&${params.toString()}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
