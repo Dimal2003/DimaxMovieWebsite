@@ -23,7 +23,8 @@ let currentType = "tv"; //tv or "tv"
 // --- TV GENRE SUPPORT ---
 // Helper to load TV genres
 const loadTVGenres = async () => {
-  const url = `${"https://api.themoviedb.org/3"}/genre/tv/list?api_key=${"425273c307f70d431e9f9bbcf897c6d7"}&language=en-US`;
+  // Use backend proxy to keep API key secure
+  const url = `/api/tmdb-proxy?endpoint=genre/tv/list&language=en-US`;
   try {
     const response = await fetch(url);
     const data = await response.json();
@@ -36,7 +37,8 @@ const loadTVGenres = async () => {
 
 // Helper to load TV series by genre
 const loadTVByGenre = async (genreId, page = 1) => {
-  const url = `${"https://api.themoviedb.org/3"}/discover/tv?api_key=${"425273c307f70d431e9f9bbcf897c6d7"}&with_genres=${genreId}&sort_by=popularity.desc&page=${page}`;
+  // Use backend proxy to keep API key secure
+  const url = `/api/tmdb-proxy?endpoint=discover/tv&with_genres=${genreId}&sort_by=popularity.desc&page=${page}`;
   try {
     const response = await fetch(url);
     const data = await response.json();
